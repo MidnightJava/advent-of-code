@@ -5,8 +5,21 @@
 from ...base import StrSplitSolution, answer
 from ...utils.transformations import parse_ints
 from re import findall
-from collections import defaultdict
-import time
+from collections import defaultdict, Counter
+from math import prod
+from dataclasses import dataclass
+from pathlib import Path
+
+@dataclass
+class Robot():
+  x: int
+  y: int
+  vx: int
+  vy: int
+  
+  @property
+  def position(self) -> tuple[int, int]:
+      return self.x, self.y
 
 
 
@@ -15,76 +28,71 @@ class Solution(StrSplitSolution):
     _day = 14
     separator ="\n"
     grid = defaultdict(list)
+    robots = []
     num_moves = 100
-    width = 0
-    height = 0
     score = 1
+    START = 28
     
     def get_score(self):
       ul = ur = ll = lr = 0
-      score = 1
-      for loc in self.grid:
-        if loc[0] < self.width // 2: #left
-          if loc[1] < self.height // 2: #upper
-            ul += len(self.grid[loc])
-          elif loc[1] > self.height //2: #lower
-            ll += len(self.grid[loc])
-        elif loc[0] > self.width //2: #right
-          if loc[1] < self.height // 2: #upper
-            ur += len(self.grid[loc])
-          elif loc[1] > self.height //2: #lower
-            lr += len(self.grid[loc])
-      for q in [ul, ur, ll, lr]:
-       score *= q
-      return score
+      for robot in self.robots:
+        if robot.x < self.num_cols // 2: #left
+          if robot.y < self. num_rows // 2: #upper
+            ul += 1
+          elif robot.y > self.num_rows //2: #lower
+            ll += 1
+        elif robot.x > self.num_cols //2: #right
+          if robot.y < self.num_rows // 2: #upper
+            ur += 1
+          elif robot.y > self.num_rows //2: #lower
+            lr += 1
+      return prod([ul, ur, ll, lr])
     
-    def next_loc(self, loc, vel):
-      loc = ((loc[0] + vel[0]) % (self.width), (loc[1] + vel[1]) % (self.height))
-      return loc
-    
-    def move(self):
-      new_grid = defaultdict(list)
-      for loc in self.grid:
-        vels = self.grid[loc]
-        for vel in vels:
-          next_loc = self.next_loc(loc, vel)
-          new_grid[next_loc].append(vel)
-      self.grid = new_grid
-        
-
-    # @answer(1234)
-    def part_1(self) -> int:
-      for block in self.input:
-        px, py, vx, vy = parse_ints(findall(r"[+-]*\d+", block))
-        pos = (px, py)
-        vel = (vx, vy)
-        self.grid[pos].append(vel)
-        self.width = max(self.width, px)
-        self.height = max(self.height, py)
-      self.height += 1
-      self.width += 1
-      self.grid_copy = self.grid.copy()
-      
-      for _ in range(self.num_moves):
-        self.move()
-      return self.get_score()
+    def move(self, n = 1):
+      for robot in self.robots:
+        robot.x = (robot.x + n * robot.vx) % self.num_cols
+        robot.y = (robot.y + n * robot.vy) % self.num_rows
 
     @answer(226179492)
-    def part_2(self) -> int:
-      self.grid = self.grid_copy
-      i = 0
-      while True:
-        self.move()
-        i += 1
-        for y in range(self.height):
-          for x in range(self.width):
-            print("o" if len(self.grid[(x,y)]) else " ", end="")
-          print()
-        # input("Continue:")
-        print(f"MOVE {i}")
-        # time.sleep(.3)
-        
+    def part_1(self) -> int:
+      if self.use_test_data:
+            self.num_cols = 11
+            self.num_rows = 7
+      else:
+          self.num_cols = 101
+          self.num_rows = 103
+      for block in self.input:
+        self.robots.append(Robot(*parse_ints(findall(r"-?\d+", block))))
+      self.move(self.num_moves)
+      return self.get_score()
 
-    # @answer((1234, 4567))
-    # def solve(self) -> tuple[int, int]:
-    #     pass
+    @answer(7502)
+    def part_2(self) -> int:
+      # pass
+      self.robots.clear()
+      for block in self.input:
+        self.robots.append(Robot(*parse_ints(findall(r"-?\d+", block))))
+      
+      images = []
+      self.move(self.START)
+      for i in range(1,150):
+        self.move(self.num_cols)
+        locations = [r.position for r in self.robots]
+        grid = Counter(locations)
+        # images.append(f"MOVE {self.START + self.num_cols * i}")
+        # images.append(f"Move {i+ 1}")
+        # images.extend(
+        #         "".join(str(grid.get((c, r), ".")) for c in range(self.num_cols))
+        #         for r in range(self.num_rows)
+        #     )
+        if len(self.robots) == len(set(locations)):
+          self.debug(
+                    "\n".join(
+                        "".join(str(grid.get((c, r), ".")) for c in range(self.num_cols))
+                        for r in range(self.num_rows)
+                    )
+                )
+          
+          return self.START + self.num_cols * i
+       
+      # Path(__file__, "..", "output.txt").resolve().write_text("\n".join(images))
