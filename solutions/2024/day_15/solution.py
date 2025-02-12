@@ -3,7 +3,6 @@
 # puzzle prompt: https://adventofcode.com/2024/day/15
 
 from ...base import StrSplitSolution, answer
-from dataclasses import dataclass
 from typing import List
 
 class Grid():
@@ -21,9 +20,16 @@ class Grid():
                 data[i] = line.replace("@", ".")
                 self.robot_pos = (i, x)
                 break
-    def peek(self, pos):
-        y,x = pos
-        return self.data[y][x]
+              
+    @staticmethod
+    def peek(y, x, grid):
+        return grid[y][x]
+      
+    @staticmethod
+    def set(y, x, ch, grid):
+      line = grid[y]
+      line = line[:x] + ch + line[x + 1:]
+      grid[y] = line
       
     def score(self):
       total = 0
@@ -54,25 +60,16 @@ class Solution(StrSplitSolution):
         c = grid[y][x]
         if c == "#": return None
         elif c == "O":
-          grid = grid[::]
-          line = grid[pos[0]]
-          line = line[:pos[1]] + ch + line[pos[1] + 1:]
-          grid[pos[0]] = line
+          Grid.set(pos[0], pos[1], ch, grid)
           new_grid = self.shove_box((y,x), 'O', move, grid)
           if not new_grid: return None
           else:
-            line = new_grid[y]
-            line = line[:x] + c + line[x + 1:]
-            new_grid[y] = line
+            Grid.set(y,x , c, new_grid)
             return new_grid[::]
         else:
             new_grid = grid[::]
-            line = new_grid[y]
-            line = line[:x] + 'O' + line[x+1:]
-            new_grid[y] = line
-            line = new_grid[pos[0]]
-            line = line[:pos[1]] + ch + line[pos[1]+1:]
-            new_grid[pos[0]] = line
+            Grid.set(y, x, 'O', new_grid)
+            Grid.set(pos[0], pos[1], ch, new_grid)
             return new_grid
 
 
@@ -86,7 +83,7 @@ class Solution(StrSplitSolution):
             self.debug(f"Move {move}:")
             y = robot[0] -1 if move == '^' else robot[0] + 1 if move == 'v' else robot[0]
             x = robot[1] -1 if move == '<' else robot[1] + 1 if move == '>' else robot[1]
-            c = self.grid.peek((y,x))
+            c = Grid.peek(y,x, self.grid.data)
             if c == 'O':
                 new_grid = self.shove_box((y,x), '.', move, self.grid.data[::])
                 if new_grid:
