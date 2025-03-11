@@ -7,6 +7,7 @@ from ...utils.grid_util import grid_walk, grid_walk_val
 from ...utils.vectors import IntVector2
 
 from collections import deque
+import heapq
 
 
 class Solution(StrSplitSolution):
@@ -28,13 +29,11 @@ class Solution(StrSplitSolution):
       min_score = None
       x,y = start.x, start.y
       path = [start]
-      queue = deque( [(x,y,dir,path,0)])
+      queue = [(0,x,y,dir,path)]
       while len(queue)>0:
-        x,y,dir,path,score = queue.popleft()
+        score,x,y,dir,path = heapq.heappop(queue)
         if IntVector2(x,y).of_grid(self.grid) == "E":
-              min_score = score if min_score is None else min(score, min_score)
-              print(min_score)
-              continue
+              return score
         for _dir, _score in [(dir,1), ((dir+1)%4, 1001), ((dir-1)%4, 1001)]:
           move = self.dirs[_dir]
           next_pos = IntVector2(x,y) + IntVector2(move[0], move[1])
@@ -42,7 +41,7 @@ class Solution(StrSplitSolution):
           if not next_pos in path and next_pos.of_grid(self.grid) != '#':
             path.append(next_pos)
             score += _score
-            queue.append((next_pos.x,next_pos.y,_dir,path[::],score))
+            heapq.heappush(queue, (score,next_pos.x,next_pos.y,_dir,path[::]))
             # print(len(queue))
             
       return min_score
