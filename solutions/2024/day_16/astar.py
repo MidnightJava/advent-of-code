@@ -40,15 +40,15 @@ If no path is found, return None.
 import heapq
 
 class Node:
-    def __init__(self, position, g, h):
-        self.position = position
-        self.g = g
-        self.h = h
-        self.f = g + h
-        self.parent = None
+  def __init__(self, position, g, h):
+      self.position = position
+      self.g = g
+      self.h = h
+      self.f = g + h
+      self.parent = None
 
-    def __lt__(self, other):
-        return self.f < other.f
+  def __lt__(self, other):
+      return self.f < other.f
 
 def a_star(grid, start, goal):
     open_list = []
