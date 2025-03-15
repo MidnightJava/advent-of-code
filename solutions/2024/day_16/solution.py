@@ -6,8 +6,8 @@ from ...base import StrSplitSolution, answer
 from ...utils.grid_util import grid_walk, grid_walk_val
 from ...utils.vectors import IntVector2
 
-from collections import deque
 import heapq
+import time
 
 class Node:
   def __init__(self, position, dir, g, h):
@@ -25,14 +25,17 @@ class Solution(StrSplitSolution):
     _year = 2024
     _day = 16
     
-    dirs = {
+    moves = {
       0: (1,0), #E
       1: (0,1), #S
       2: (-1,0),#W
       3: (0,-1) #N
     }
     
+    start_time = time.time()
+    
     paths = []
+    best_path_nodes = set()
         
     def get_goal_pos(self, v: str):
       for pos, val in grid_walk_val(self.grid):
@@ -49,7 +52,7 @@ class Solution(StrSplitSolution):
         if val == v:
           return pos
     
-    def a_star(self, start: Node, goal: IntVector2):
+    def get_best_path(self, start: Node, goal: IntVector2):
       open_list = []
       closed_list = set()
 
@@ -60,17 +63,12 @@ class Solution(StrSplitSolution):
           x,y,dir = current_node.position.x, current_node.position.y, current_node.dir
 
           if current_node.position == goal:
-              path = []
-              g = current_node.g
-              while current_node:
-                  path.append(current_node.position)
-                  current_node = current_node.parent
-              return len(path), g
+              return current_node.g
 
           closed_list.add(current_node.position)
 
           for _dir, score in [(dir,1), ((dir+1)%4, 1001), ((dir-1)%4, 1001), ((dir+2)%4, 2001)]:
-            move = self.dirs[_dir]
+            move = self.moves[_dir]
             next_pos = IntVector2(x,y) + IntVector2(move[0], move[1])
             if next_pos.of_grid(self.grid) != '#' and next_pos not in closed_list:
               g = current_node.g + score
@@ -81,11 +79,9 @@ class Solution(StrSplitSolution):
                   
       return None
     
-    def a_star2(self, start: Node, goal: IntVector2, min_score: int):
+    def get_all_best_paths(self, start: Node, goal: IntVector2, min_score: int):
       open_list = []
-      closed_list = {start.position: 0}
-      pos = (start.position.x, start.position.y)
-      
+      visited = {(start.position, start.dir): start.g}      
       heapq.heappush(open_list, (start, [start.position]))
 
       while open_list:
@@ -95,92 +91,56 @@ class Solution(StrSplitSolution):
           if current_node.position == goal:
             if current_node.g == min_score:
                 self.paths.append(path)
+            continue
                 
-          if current_node.g > min_score:
+          if current_node.g >= min_score:
             continue 
 
-          for _dir, score in [(dir,1), ((dir+1)%4, 1001), ((dir-1)%4, 1001), ((dir+2)%4, 2001)]:
-            move = self.dirs[_dir]
+          for _dir, score in [(dir,1), ((dir+1)%4, 1001), ((dir-1)%4, 1001)]:
+            move = self.moves[_dir]
             next_pos = IntVector2(x,y) + IntVector2(move[0], move[1])
             if next_pos.of_grid(self.grid) != '#':
               g = current_node.g + score
-              if next_pos not in closed_list or closed_list[next_pos] <= min_score:
+              if (next_pos, _dir) not in visited or visited[(next_pos, _dir)] >= g:
                 if g <= min_score:
-                  closed_list[next_pos] = g
+                  visited[(next_pos, _dir)] = g
                   h = abs(next_pos.x - goal.x) + abs(next_pos.y - goal.y)
-                  neighbor_node = Node(next_pos, _dir, g, h)
-                  neighbor_node.parent = current_node
-                  path.append(neighbor_node.position)
-                  heapq.heappush(open_list, (neighbor_node, path[::]))
+                  nb = Node(next_pos, _dir, g, h)
+                  # nb.parent = current_node
+                  heapq.heappush(open_list, (nb,  path[::] + [next_pos]))
                   
       return self.paths
-    
-    def dfs(self, current: IntVector2, goal: IntVector2, dir: int, score: int, min_score: int, path: list, seen: dict):
-
-      # print(f"Current pos {current}")
-      if current == goal:
-        print("Reached goal")
-        if score == min_score:
-          self.paths.append(path)
-       
-      if score == min_score:
-        return
-          
-      for _dir, _score in [(dir,1), ((dir+1)%4, 1001), ((dir-1)%4, 1001), ((dir+2)%4, 2001)]:
-        move = self.dirs[_dir]
-        next_pos = IntVector2(current.x, current.y) + IntVector2(move[0], move[1])
-        if next_pos.of_grid(self.grid) != '#':
-          score += _score
-          if score > min_score:
-            continue
-          if next_pos not in seen or seen[next_pos] > score:
-            path.append(next_pos)
-            seen[next_pos] = score
-            self.dfs(next_pos, goal, _dir, score, min_score, path[::], seen.copy())
             
-    # @answer(1234)
+    @answer(115500)
     def part_1(self) -> int:
       self.grid = []
       for line in self.input:
         self.grid.append(list(line))
       g = self.get_goal_pos('E')
       s = self.get_start_node('S', g)
-      print(f"Start at {s}")
-      l, score = self.a_star(s, g)
-      print(f"part 1 path length {l}")
-      return score
+      self.debug(f"Part 1 time: {(time.time() - self.start_time):.2f} sec")
+      return self.get_best_path(s, g)
       
 
         
-    # @answer(1234)
+    @answer(679)
     def part_2(self) -> int:
       g = self.get_goal_pos('E')
       s = self.get_start_node('S', g)
-      print(f"Start at {s}")
-      l, score = self.a_star(s, g)
-      print(f"start at {s} goal is {g}")
-      paths = self.a_star2(s, g, score)
-      print(f"{len(paths)} paths")
+      score = self.get_best_path(s, g)
+      paths = self.get_all_best_paths(s, g, score)
+      print(f"{len(paths)} best paths")
       unique_nodes = set()
       for path in paths:
         for node in path:
           unique_nodes.add(node)
-      for node in unique_nodes:
-        node.set_grid(self.grid, 'O')
-      for line in self.grid:
-        print("".join(line))
-      return len(unique_nodes)
-      
-      # s2 = self.get_start_pos('S')
-      # print(f"start at {s2} goal is {g}")
-      # self.dfs(current=s2, goal=g, dir=0, score=0, min_score=score, path=[s2], seen={s2:0})
-      # flattened = [item for sublist in self.paths for item in sublist]
-      # for pos in flattened:
-      #   IntVector2(pos[0], pos[1]).set_grid(self.grid, 'O')
+      #Print grid showing all nodes on a best path
+      # for node in unique_nodes:
+      #   node.set_grid(self.grid, 'O')
       # for line in self.grid:
       #   print("".join(line))
-      # return len(flattened)
-      
+      self.debug(f"Part 2 time: {(time.time() - self.start_time):.2f} sec")
+      return len(unique_nodes)
 
     # @answer((1234, 4567))
     # def solve(self) -> tuple[int, int]:
