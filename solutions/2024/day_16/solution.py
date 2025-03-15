@@ -33,8 +33,6 @@ class Solution(StrSplitSolution):
     }
     
     start_time = time.time()
-    
-    paths = []
     best_path_nodes = set()
         
     def get_goal_pos(self, v: str):
@@ -82,15 +80,20 @@ class Solution(StrSplitSolution):
     def get_all_best_paths(self, start: Node, goal: IntVector2, min_score: int):
       open_list = []
       visited = {(start.position, start.dir): start.g}      
-      heapq.heappush(open_list, (start, [start.position]))
+      heapq.heappush(open_list, start)
 
       while open_list:
-          current_node, path = heapq.heappop(open_list)
+          current_node = heapq.heappop(open_list)
           x,y,dir = current_node.position.x, current_node.position.y, current_node.dir
 
           if current_node.position == goal:
             if current_node.g == min_score:
-                self.paths.append(path)
+                path = []
+                g = current_node.g
+                while current_node:
+                  path.append(current_node.position)
+                  current_node = current_node.parent
+                self.best_path_nodes.update(path)
             continue
                 
           if current_node.g >= min_score:
@@ -106,10 +109,10 @@ class Solution(StrSplitSolution):
                   visited[(next_pos, _dir)] = g
                   h = abs(next_pos.x - goal.x) + abs(next_pos.y - goal.y)
                   nb = Node(next_pos, _dir, g, h)
-                  # nb.parent = current_node
-                  heapq.heappush(open_list, (nb,  path[::] + [next_pos]))
+                  nb.parent = current_node
+                  heapq.heappush(open_list, nb)
                   
-      return self.paths
+      return self.best_path_nodes
             
     @answer(115500)
     def part_1(self) -> int:
@@ -128,19 +131,9 @@ class Solution(StrSplitSolution):
       g = self.get_goal_pos('E')
       s = self.get_start_node('S', g)
       score = self.get_best_path(s, g)
-      paths = self.get_all_best_paths(s, g, score)
-      print(f"{len(paths)} best paths")
-      unique_nodes = set()
-      for path in paths:
-        for node in path:
-          unique_nodes.add(node)
-      #Print grid showing all nodes on a best path
-      # for node in unique_nodes:
-      #   node.set_grid(self.grid, 'O')
-      # for line in self.grid:
-      #   print("".join(line))
+      nodes = self.get_all_best_paths(s, g, score)
       self.debug(f"Part 2 time: {(time.time() - self.start_time):.2f} sec")
-      return len(unique_nodes)
+      return len(nodes)
 
     # @answer((1234, 4567))
     # def solve(self) -> tuple[int, int]:
