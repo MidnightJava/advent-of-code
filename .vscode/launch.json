@@ -10,9 +10,6 @@
       "request": "launch",
       "program": "/opt/git/advent-of-code/advent",
       "console": "integratedTerminal",
-      "args": [
-        "--test"
-      ]
     }
   ]
 }
