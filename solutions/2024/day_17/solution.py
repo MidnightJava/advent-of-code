@@ -76,9 +76,8 @@ class Solution(StrSplitSolution):
         self.a = a
         self._solve()
         return self.res[-n:] == self.prog[-n:]
-
-    @answer(236539226447469)
-    def part_2(self) -> int:
+    
+    def bfs(self) -> int:
         a_parts = defaultdict(set)
         a_min = None
         for a_idx in range(len(self.prog)):
@@ -97,6 +96,23 @@ class Solution(StrSplitSolution):
                                 a_min = a+n if a_min is None else min(a+n, a_min)
                             a_parts[a_idx].add(n)
         return a_min
+    
+    # 200x faster solution
+    def dfs(self, a: int, idx: int) -> int:
+        if idx == len(self.prog):
+            self.min_a = a if self.min_a is None else min(self.min_a, a)
+            return
+        for n in range(8):
+          if self.test_output(a * 8 + n, idx+1):
+            self.dfs(a * 8 + n, idx+1)
+        return self.min_a
+
+
+    @answer(236539226447469)
+    def part_2(self) -> int:
+    #    return self.bfs()
+        self.min_a = None
+        return self.dfs(0, 0)
         
 """
 What the program is doing:
