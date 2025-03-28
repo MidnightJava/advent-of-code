@@ -76,7 +76,6 @@ class Solution(StrSplitSolution):
         self.a = a
         self._solve()
         return self.res[-n:] == self.prog[-n:]
-    
 
     @answer(236539226447469)
     def part_2(self) -> int:
@@ -89,14 +88,12 @@ class Solution(StrSplitSolution):
                         a_parts[a_idx].add(n)
             else:
                 for p in product(*a_parts.values()):
-                    # print(p)
                     a = 0
                     for i in list(range(len(p))):
                         a += (p[i] * (8**(len(p) - i)))
                     for n in range(8):
                         if self.test_output(a+n, a_idx+1):
                             if a_idx == len(self.prog) - 1:
-                                # print(a+n)
                                 a_min = a+n if a_min is None else min(a+n, a_min)
                             a_parts[a_idx].add(n)
         return a_min
@@ -113,7 +110,7 @@ while a != 0:
   B ^= C
   Output B % 8
 
-Solution inspired by explanaiton here: https://www.reddit.com/r/adventofcode/comments/1hhtc6g/comment/m2u1fjh
+Solution inspired by explanation here: https://www.reddit.com/r/adventofcode/comments/1hhtc6g/comment/m2u1fjh
     EThe first n octal digits in a will determine the last n values in the output
     So if the program is X_16,X_15,X_14,...,X_0
     look for all a0s which f(a0) outputs X_0
