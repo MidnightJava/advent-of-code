@@ -7,7 +7,9 @@ from ...utils.transformations import parse_ints
 from ...utils.graphs import neighbors, GridPoint, taxicab_distance
 import re
 import heapq
+import sys
 
+sys.setrecursionlimit(40000)
 class Solution(StrSplitSolution):
     _year = 2024
     _day = 18
@@ -15,38 +17,23 @@ class Solution(StrSplitSolution):
     start = (0,0)
     min_cost = None
     
-    # Recursion doesn't close. Not a good approach for shortest path
-    def dfs(self, pos: GridPoint, end: GridPoint, cost: int, visited: dict[int]):
-        print(pos)
-        if pos == end:
-            self.min_cost = cost if self.min_cost is None else min(cost, self.min_cost)
-        for nb in neighbors(pos, num_directions=4, max_size=self.max_size):
-            if not nb in self.bytes:
-                if nb not in visited or visited[nb] > cost+1:
-                    visited[nb] = cost + 1
-                    self.dfs(nb, end, cost+1, visited.copy())
-    
     def bfs(self, start: GridPoint, end: GridPoint):
         min_dst = None
-        open_list = []
-        path = []
+        queue = []
+        visited = set()
 
-        heapq.heappush(open_list, (0, start, [], set()))
-        while open_list:
-            dst, pos, _path, visited = heapq.heappop(open_list)
+        heapq.heappush(queue, (0, start))
+        while queue:
+            dst, pos = heapq.heappop(queue)
             if pos == end:
-                if min_dst is None or dst < min_dst:
-                  min_dst = dst
-                  path = _path
-                continue
+                min_dst = dst if min_dst is None else min(dst, min_dst)
             if pos in visited:
               continue
             visited.add(pos)
             for nb in neighbors(pos, num_directions=4, max_size=self.max_size):
-                if nb not in self.bytes:
-                    if nb not in visited:
-                        heapq.heappush(open_list, (dst+1, nb, _path + [nb], visited))
-        return min_dst, path
+                if nb not in self.bytes and nb not in visited:
+                    heapq.heappush(queue, (dst+1, nb))
+        return min_dst
     
     def bfsa(self, start: GridPoint, end: GridPoint):
         seen = set([start])
@@ -72,10 +59,7 @@ class Solution(StrSplitSolution):
         # convert input to (y,x) format
         self._bytes = list(map(lambda x: tuple(parse_ints(re.findall(r'\d+', x)))[::-1], self.input))
         self.bytes = self._bytes[:self.n]
-        # self.dfs(self.start, self.end, 0, {})
-        # return self.min_cost
-        cost, _ =  self.bfs(self.start, self.end)
-        return cost
+        return  self.bfs(self.start, self.end)
     
     def find_breaking_idx(self, left, right):
         while left <= right:
