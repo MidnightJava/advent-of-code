@@ -66,7 +66,7 @@ class Solution(StrSplitSolution):
             if left == right:
                 return self._bytes[left][::-1]
             middle = (left + right) // 2
-            self.bytes = self._bytes[0: middle+1]
+            self.bytes = self._bytes[:middle+1]
             path = self.bfsa(self.start, self.end)
             if len(path) == 0:
                 right = middle - 1
