@@ -8,8 +8,9 @@
       "name": "Python Debugger: advent",
       "type": "debugpy",
       "request": "launch",
-      "program": "/opt/git/advent-of-code/advent",
+      "program": "/home/mal/git/advent-of-code/advent",
       "console": "integratedTerminal",
+      "args": ["-t"]
     }
   ]
 }
