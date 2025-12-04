@@ -30,6 +30,16 @@ class Solution(StrSplitSolution):
 
     @answer(24043483400)
     def part_1(self) -> int:
+        """
+        Input is product ID ranges separated by commas (,); each range gives its first ID and last ID separated by a dash (-).
+
+        Find the invalid IDs by looking for any ID which is made only of some sequence of digits repeated twice. So, 55 (5 twice),
+        6464 (64 twice), and 123123 (123 twice) would all be invalid IDs.
+
+        None of the numbers have leading zeroes; 0101 isn't an ID at all. (101 is a valid ID that you would ignore.)
+
+        Your job is to find all of the invalid IDs that appear in the given ranges.
+        """
         score = 0
         for l in self.input:
             idx = l.index('-')
@@ -42,6 +52,10 @@ class Solution(StrSplitSolution):
     
     # @answer(1234)
     def part_2(self) -> int:
+        """
+        Now, an ID is invalid if it is made only of some sequence of digits repeated at least twice. So, 12341234 (1234 two times),
+        123123123 (123 three times), 1212121212 (12 five times), and 1111111 (1 seven times) are all invalid IDs.
+        """
         score = 0
         for l in self.input:
             idx = l.index('-')

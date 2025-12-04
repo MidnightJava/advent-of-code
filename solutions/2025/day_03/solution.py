@@ -26,20 +26,29 @@ class Solution(StrSplitSolution):
         digits_orig = list(map(lambda d: int(d), line.strip()))
         result = []
         i = 0
-        k = 11
-        j = len(line) - k
+        j = len(line) - 11
         while len(result) < 12:
             digits = digits_orig[i:j]
             _max = max(digits)
             next_digit = str(_max)
             result.append(next_digit)
-            i = digits.index(_max) + i + 1
-            k -= 1
-            j = len(line) - k
+            i += (digits.index(_max) + 1)
+            j += 1
         return int("".join(result))
            
     @answer(17554)
     def part_1(self) -> int:
+        """
+        There are batteries nearby that can supply emergency power to the escalator for just such an occasion. The batteries are
+        each labeled with their joltage rating, a value from 1 to 9. You make a note of their joltage ratings (your puzzle input).
+
+        The batteries are arranged into banks; each line of digits in your input corresponds to a single bank of batteries. Within
+        each bank, you need to turn on exactly two batteries; the joltage that the bank produces is equal to the number formed by
+        the digits on the batteries you've turned on. For example, if you have a bank like 12345 and you turn on batteries 2 and 4,
+        the bank would produce 24 jolts. (You cannot rearrange batteries.)
+
+        You'll need to find the largest possible joltage each bank can produce.
+        """
         joltage = 0
         for line in self.input:
             j = self.find_joltage(line)
@@ -48,11 +57,14 @@ class Solution(StrSplitSolution):
     
     @answer(175053592950232)
     def part_2(self) -> int:
+        """
+        The joltage output for the bank is still the number formed by the digits of the batteries you've turned on; the only difference
+        is that now there will be 12 digits in each bank's joltage output instead of two.
+        """
         i = 1
         joltage = 0
         for line in self.input:
             j = self.find_joltage2(line)
-            print(i, j)
             i += 1
             joltage += j
         return joltage

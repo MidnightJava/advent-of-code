@@ -27,7 +27,9 @@ def neighbors(
     * `num_directions`: Can get cardinal directions (4), include diagonals (8), or include self (9)
     * `ignore_negatives`: skips points where either value is less than 0
     * `diagonals`: only returns corners; only valid if supplied with `num_directions == 4`
-    * `max_DIM_size`: if specified, skips points where the dimension value is greater than the max grid size in that dimension. If doing a 2D-List based (aka `(row,col)` grid) rather than a pure `(x,y)` grid, the max values should be `len(DIM) - 1`. Is mutually exclusive with `max_size`. Upper bounds imply a lower bound of 0.
+    * `max_DIM_size`: if specified, skips points where the dimension value is greater than the max grid size in that dimension.
+        If doing a 2D-List based (aka `(row,col)` grid) rather than a pure `(x,y)` grid, the max values should be `len(DIM) - 1`.
+        Is mutually exclusive with `max_size`. Upper bounds imply a lower bound of 0.
 
     For a 2D list-based grid, neighbors will come out in (row, col) format.
     """
