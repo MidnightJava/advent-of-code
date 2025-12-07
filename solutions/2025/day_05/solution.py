@@ -24,6 +24,24 @@ class Solution(StrSplitSolution):
 
     @answer(661)
     def part_1(self) -> int:
+        """The database operates on ingredient IDs. It consists of a list of fresh ingredient ID ranges, a blank line,
+        and a list of available ingredient IDs. For example:
+
+        3-5
+        10-14
+        16-20
+        12-18
+
+        1
+        5
+        8
+        11
+        17
+        32
+        The fresh ID ranges are inclusive: the range 3-5 means that ingredient IDs 3, 4, and 5 are all fresh. The ranges
+        can also overlap; an ingredient ID is fresh if it is in any range.
+
+        The Elves are trying to determine which of the available ingredient IDs are fresh. """
         self.fresh_ids = self.input[0]
         self.avail_ids = self.input[1]
         self.fresh_list = []
@@ -51,6 +69,10 @@ class Solution(StrSplitSolution):
         
     @answer(359526404143208)
     def part_2(self) -> int:
+        """the Elves would like to know all of the IDs that the fresh ingredient ID ranges consider to be fresh.
+        An ingredient ID is still considered fresh if it is in any range.
+
+        Now, the second section of the database (the available ingredient IDs) is irrelevant."""
         count = 0
         for l in self.fresh_list:
             count += (l[1] - l[0]+1)
