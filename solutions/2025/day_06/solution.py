@@ -44,6 +44,7 @@ class Solution(StrSplitSolution):
         answer = 0
         for line in self.input:
             self.matrix.append(line.split())
+        # Transpose the matrix
         self.matrix = [[self.matrix[j][i] for j in range(len(self.matrix))] for i in range(len(self.matrix[0]))]   
 
         for prob in self.matrix:
@@ -75,8 +76,10 @@ class Solution(StrSplitSolution):
         Now, the grand total is 1058 + 3253600 + 625 + 8544 = 3263827."""
         self.matrix = []
         for line in self.input:
+            #Make the line a list of single charatcers, so we can detect spaces by column number
             self.matrix.append(list(line))
 
+        # Zero-fill all spaces when any row above or below at the same column has a number (i.e. not a space).
         w = len(self.matrix[0])
         h = len(self.matrix)
         for i in range(w):
@@ -85,11 +88,15 @@ class Solution(StrSplitSolution):
                     for x in range(h):
                         if self.matrix[x][i] != ' ':
                             self.matrix[j][i] = '0'
+        # Now join the list and then split it by spaces
         for i, row in enumerate(self.matrix):
             self.matrix[i] = ''.join(row).split()
 
+        # Transpose the matrix
         self.matrix = [[self.matrix[j][i] for j in range(len(self.matrix))] for i in range(len(self.matrix[0]))]   
         answer = 0
+        
+        # Form operands top-down for each column, i.gnoring zeros
         for prob in self.matrix:
             op = prob.pop()
             if '+' in op:
