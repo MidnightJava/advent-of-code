@@ -4,6 +4,24 @@
 
 from ...base import StrSplitSolution, answer
 
+""" PART 1
+
+There are batteries nearby that can supply emergency power to the escalator for just such an occasion. The batteries are
+each labeled with their joltage rating, a value from 1 to 9. You make a note of their joltage ratings (your puzzle input).
+
+The batteries are arranged into banks; each line of digits in your input corresponds to a single bank of batteries. Within
+each bank, you need to turn on exactly two batteries; the joltage that the bank produces is equal to the number formed by
+the digits on the batteries you've turned on. For example, if you have a bank like 12345 and you turn on batteries 2 and 4,
+the bank would produce 24 jolts. (You cannot rearrange batteries.)
+
+You'll need to find the largest possible joltage each bank can produce.
+"""
+
+""" PART 2
+
+The joltage output for the bank is still the number formed by the digits of the batteries you've turned on; the only difference
+is that now there will be 12 digits in each bank's joltage output instead of two.
+"""
 
 class Solution(StrSplitSolution):
     _year = 2025
@@ -38,17 +56,6 @@ class Solution(StrSplitSolution):
            
     @answer(17554)
     def part_1(self) -> int:
-        """
-        There are batteries nearby that can supply emergency power to the escalator for just such an occasion. The batteries are
-        each labeled with their joltage rating, a value from 1 to 9. You make a note of their joltage ratings (your puzzle input).
-
-        The batteries are arranged into banks; each line of digits in your input corresponds to a single bank of batteries. Within
-        each bank, you need to turn on exactly two batteries; the joltage that the bank produces is equal to the number formed by
-        the digits on the batteries you've turned on. For example, if you have a bank like 12345 and you turn on batteries 2 and 4,
-        the bank would produce 24 jolts. (You cannot rearrange batteries.)
-
-        You'll need to find the largest possible joltage each bank can produce.
-        """
         joltage = 0
         for line in self.input:
             j = self.find_joltage(line)
@@ -57,10 +64,6 @@ class Solution(StrSplitSolution):
     
     @answer(175053592950232)
     def part_2(self) -> int:
-        """
-        The joltage output for the bank is still the number formed by the digits of the batteries you've turned on; the only difference
-        is that now there will be 12 digits in each bank's joltage output instead of two.
-        """
         i = 1
         joltage = 0
         for line in self.input:

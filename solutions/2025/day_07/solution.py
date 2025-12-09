@@ -5,8 +5,29 @@
 from ...base import StrSplitSolution, answer
 from ...utils.graphs import neighbors, parse_grid, Direction, GridPoint, add_points
 from collections import Counter
-from functools import cache
 import json
+
+""" PART 1
+
+You quickly locate a diagram of the tachyon manifold (your puzzle input). A tachyon beam enters the manifold at the location
+marked S; tachyon beams always move downward. Tachyon beams pass freely through empty space (.). However, if a tachyon beam
+encounters a splitter (^), the beam is stopped; instead, a new tachyon beam continues from the immediate left and from the
+immediate right of the splitter.
+
+How many times will the beam be split?
+"""
+
+""" PART 2
+
+With a quantum tachyon manifold, only a single tachyon particle is sent through the manifold. A tachyon particle takes both
+the left and right path of each splitter encountered.
+
+Since this is impossible, the manual recommends the many-worlds interpretation of quantum tachyon splitting: each time a
+particle reaches a splitter, it's actually time itself which splits. In one timeline, the particle went left, and in the
+other timeline, the particle went right.
+
+In total, how many different timelines would a single tachyon particle end up on?
+"""
 
 class Solution(StrSplitSolution):
     _year = 2025

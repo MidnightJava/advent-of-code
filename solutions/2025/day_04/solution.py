@@ -5,6 +5,18 @@
 from ...base import StrSplitSolution, answer
 from ...utils.graphs import Grid, GridPoint, neighbors, parse_grid
 
+""" PART 1
+
+The rolls of paper (@) are arranged on a large grid. The forklifts can only access a roll of paper if there are
+fewer than four rolls of paper in the eight adjacent positions. How many rolls of paper can be accessed by a forklift?
+"""
+
+""" PART 2
+
+Once a roll of paper can be accessed by a forklift, it can be removed. Once a roll of paper is removed, the forklifts
+might be able to access more rolls of paper, which they might also be able to remove. How many total rolls of paper
+could the Elves remove if they keep repeating this process?
+"""
 
 class Solution(StrSplitSolution):
     _year = 2025
@@ -12,10 +24,6 @@ class Solution(StrSplitSolution):
 
     @answer(1537)
     def part_1(self) -> int:
-        """
-        The rolls of paper (@) are arranged on a large grid. The forklifts can only access a roll of paper if there are
-        fewer than four rolls of paper in the eight adjacent positions. How many rolls of paper can be accessed by a forklift?
-        """
         count = 0
         grid = parse_grid(self.input)
         for pnt in grid.keys():
@@ -35,11 +43,6 @@ class Solution(StrSplitSolution):
     
     @answer(8707)
     def part_2(self) -> int:
-        """
-        Once a roll of paper can be accessed by a forklift, it can be removed. Once a roll of paper is removed, the forklifts
-        might be able to access more rolls of paper, which they might also be able to remove. How many total rolls of paper
-        could the Elves remove if they keep repeating this process?
-        """
         count = 0
         grid = parse_grid(self.input)
         while True:
