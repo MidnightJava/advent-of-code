@@ -9,8 +9,7 @@
       "type": "debugpy",
       "request": "launch",
       "program": "/home/mal/git/advent-of-code/advent",
-      "console": "integratedTerminal",
-      "args": ["-t"]
+      "console": "integratedTerminal"
     }
   ]
 }

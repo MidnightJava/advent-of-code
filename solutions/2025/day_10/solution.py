@@ -55,6 +55,7 @@ class Solution(StrSplitSolution):
                 num_presses = sum(config)
                 min_count = num_presses if not min_count else min(num_presses, min_count)
         self.cache[machine] = min_count
+        if not min_count: print("No Match")
         return min_count
     
     @answer(514)
@@ -83,14 +84,32 @@ class Solution(StrSplitSolution):
         # for machine in self.machines:
         #     print(f"joltage: {machine.joltage}, class: {type(machine.joltage)}")
         count = 0
+        idx = 1
         for machine in self.machines:
+            print(f"Machine {idx}")
+            idx += 1
             if machine in  self.cache:
                 print("Using cache")
                 count+= self.cache[machine]
             else:
-                n = len(machine.buttons)
-                button_configs = product(range(6), repeat=n)
-                count += self.min_presses2(button_configs, machine)
+                done = False
+                n = 2
+                while not done:
+                    r = len(machine.buttons)
+                    button_configs = product(range(n), repeat=r)
+                    res = self.min_presses2(button_configs, machine)
+                    if res is None:
+                        if n == 4:
+                            print(f"Failed for machine {idx}")
+                            done = True
+                            continue
+                        else:
+                            n+= 1
+                            print(f"Trying with n {n}")
+                            continue
+                    else:
+                        count += res
+                        done = True
         return count
 
     # @answer((1234, 4567))
