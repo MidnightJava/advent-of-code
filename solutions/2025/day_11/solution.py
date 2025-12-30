@@ -4,6 +4,7 @@
 
 from ...base import StrSplitSolution, answer
 import heapq
+from functools import cache
 
 
 class Solution(StrSplitSolution):
@@ -28,28 +29,19 @@ class Solution(StrSplitSolution):
                     heapq.heappush(queue, (visited.copy(), dst, self.devices[dst]))
         return paths
     
-    def num_paths2(self):
-        queue = []
-        path = ["svr"]
-        num_paths = 0
-        paths = set()
-
-        heapq.heappush(queue, (set(), path, "svr"))
-        while queue:
-            # print(len(queue))
-            visited, _path, src = heapq.heappop(queue)
-            visited.add(src)
-            if src == "out":
-                if "dac" in _path and "fft" in _path:
-                    num_paths += 1
-                continue
-            for dst in self.devices[src]:
-                if not dst in visited and not dst in _path and not dst == "svr":
-                    _path.append(dst)
-                    if  not tuple(_path) in paths:
-                        paths.add(tuple(_path))
-                        heapq.heappush(queue, (visited.copy(), _path[::],  dst))
-        return num_paths
+    @cache
+    def dfs(self, start, path_t, visited_t):
+        path = list(path_t)
+        visited = list(visited_t)
+        # print(len(path))
+        for dev in self.devices[start]:
+            if dev == "out":
+                if "fft" in path or "dac" in path:
+                    self.paths += 1
+            elif not dev in visited:
+                visited.append(dev)
+                path.append(dev)
+                self.dfs(dev, tuple(path), tuple(visited))
 
     @answer(506)
     def part_1(self) -> int:
@@ -61,7 +53,10 @@ class Solution(StrSplitSolution):
 
     # @answer(1234)
     def part_2(self) -> int:
-        return self.num_paths2()
+        self.paths = 0
+        l = ['svr']
+        self.dfs("svr", tuple(l), tuple(['svr']))
+        return self.paths
     # @answer((1234, 4567))
     # def solve(self) -> tuple[int, int]:
     #     pass
